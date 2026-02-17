@@ -17,10 +17,8 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--light-bg);
             color: var(--primary-text);
+            -webkit-tap-highlight-color: transparent;
         }
-
-        .text-primary-custom { color: var(--primary-text); }
-        .bg-button-custom { background-color: var(--button-red); }
 
         .calendar-grid {
             display: grid;
@@ -30,10 +28,17 @@
         }
 
         .calendar-day {
-            min-height: 110px;
+            min-height: 80px;
             background-color: white;
-            padding: 10px;
+            padding: 6px;
             transition: all 0.2s;
+        }
+
+        @media (min-width: 768px) {
+            .calendar-day {
+                min-height: 110px;
+                padding: 10px;
+            }
         }
 
         .calendar-day:hover {
@@ -41,12 +46,21 @@
         }
 
         .shift-tag {
-            font-size: 0.75rem;
-            padding: 4px 8px;
-            border-radius: 6px;
+            font-size: 0.65rem;
+            padding: 2px 4px;
+            border-radius: 4px;
             font-weight: 800;
             display: inline-block;
-            margin-top: 6px;
+            margin-top: 4px;
+        }
+
+        @media (min-width: 768px) {
+            .shift-tag {
+                font-size: 0.75rem;
+                padding: 4px 8px;
+                border-radius: 6px;
+                margin-top: 6px;
+            }
         }
 
         .is-today {
@@ -71,6 +85,11 @@
             color: var(--button-red);
         }
 
+        /* Verhindert horizontales Scrollen auf Mobile */
+        .overflow-x-hidden-mobile {
+            overflow-x: hidden;
+        }
+
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; color: black; }
@@ -80,56 +99,56 @@
         }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-8">
+<body class="min-h-screen p-2 md:p-8 overflow-x-hidden-mobile">
 
-    <div id="app" class="max-w-6xl mx-auto space-y-6">
+    <div id="app" class="max-w-6xl mx-auto space-y-4 md:space-y-6">
         
         <!-- Dashboard Widgets -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 pt-2">
             <!-- Nächste Schicht -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 sidebar-accent">
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Status: Nächster Einsatz</p>
-                <div id="next-shift-info" class="flex items-baseline gap-3">
-                    <span id="next-shift-type" class="text-3xl font-black tracking-tight" style="color: var(--primary-text)">Lädt...</span>
-                    <span id="next-shift-date" class="text-sm font-bold px-2 py-0.5 rounded" style="background-color: #f0f1ff; color: var(--primary-text)">Datum folgt</span>
+            <div class="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm border border-slate-200 sidebar-accent">
+                <p class="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Status: Nächster Einsatz</p>
+                <div id="next-shift-info" class="flex flex-wrap items-baseline gap-2 md:gap-3">
+                    <span id="next-shift-type" class="text-xl md:text-3xl font-black tracking-tight" style="color: var(--primary-text)">Lädt...</span>
+                    <span id="next-shift-date" class="text-xs md:text-sm font-bold px-2 py-0.5 rounded" style="background-color: #f0f1ff; color: var(--primary-text)">Datum folgt</span>
                 </div>
             </div>
 
             <!-- Ansichtsumschalter -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 no-print">
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 text-center">Ansicht anpassen</p>
-                <div class="flex bg-slate-100 p-1 rounded-xl">
-                    <button onclick="setView('week')" id="view-week" class="flex-1 py-2 text-sm font-bold rounded-lg transition-all btn-action shadow-sm">Woche</button>
-                    <button onclick="setView('month')" id="view-month" class="flex-1 py-2 text-sm font-bold rounded-lg transition-all text-slate-500 hover:text-slate-700">Monat</button>
+            <div class="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm border border-slate-200 no-print">
+                <p class="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 md:mb-3 text-center">Ansicht anpassen</p>
+                <div class="flex bg-slate-100 p-1 rounded-lg md:rounded-xl">
+                    <button onclick="setView('week')" id="view-week" class="flex-1 py-1.5 md:py-2 text-xs md:text-sm font-bold rounded-md md:rounded-lg transition-all btn-action shadow-sm">Woche</button>
+                    <button onclick="setView('month')" id="view-month" class="flex-1 py-1.5 md:py-2 text-xs md:text-sm font-bold rounded-md md:rounded-lg transition-all text-slate-500 hover:text-slate-700">Monat</button>
                 </div>
             </div>
         </div>
 
         <!-- Kalender-Navigation -->
-        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
-            <button onclick="navigate(-1)" class="p-2 hover:bg-slate-100 rounded-xl transition-colors nav-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+        <div class="bg-white p-3 md:p-4 rounded-xl md:rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+            <button onclick="navigate(-1)" class="p-2 hover:bg-slate-100 rounded-lg md:rounded-xl transition-colors nav-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
             </button>
-            <h3 id="current-label" class="text-lg font-black uppercase tracking-tight" style="color: var(--primary-text)">Monat Jahr</h3>
-            <button onclick="navigate(1)" class="p-2 hover:bg-slate-100 rounded-xl transition-colors nav-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+            <h3 id="current-label" class="text-sm md:text-lg font-black uppercase tracking-tight text-center px-2" style="color: var(--primary-text)">Monat Jahr</h3>
+            <button onclick="navigate(1)" class="p-2 hover:bg-slate-100 rounded-lg md:rounded-xl transition-colors nav-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
             </button>
         </div>
 
         <!-- Schichtplan-Container -->
-        <div id="schedule-container" class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+        <div id="schedule-container" class="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl border border-slate-200 overflow-hidden">
             <!-- Content wird via JS gerendert -->
         </div>
 
         <!-- Legende -->
-        <div class="flex flex-wrap gap-6 justify-center text-[10px] font-bold text-slate-400 uppercase tracking-widest no-print py-4">
-            <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-md bg-amber-100 border border-amber-200"></div> Früh (06:00 - 14:00)</div>
-            <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-md bg-orange-100 border border-orange-200"></div> Spät (14:00 - 22:00)</div>
-            <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-md bg-indigo-100 border border-indigo-200"></div> Nacht (22:00 - 06:00)</div>
-            <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-md bg-slate-100 border border-slate-200"></div> Frei</div>
+        <div class="flex flex-wrap gap-x-4 gap-y-2 justify-center text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest no-print py-2 md:py-4 px-2">
+            <div class="flex items-center gap-1.5"><div class="w-3 h-3 md:w-4 md:h-4 rounded-sm md:rounded-md bg-amber-100 border border-amber-200"></div> Früh</div>
+            <div class="flex items-center gap-1.5"><div class="w-3 h-3 md:w-4 md:h-4 rounded-sm md:rounded-md bg-orange-100 border border-orange-200"></div> Spät</div>
+            <div class="flex items-center gap-1.5"><div class="w-3 h-3 md:w-4 md:h-4 rounded-sm md:rounded-md bg-indigo-100 border border-indigo-200"></div> Nacht</div>
+            <div class="flex items-center gap-1.5"><div class="w-3 h-3 md:w-4 md:h-4 rounded-sm md:rounded-md bg-slate-100 border border-slate-200"></div> Frei</div>
         </div>
 
-        <footer class="text-center py-8 text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">
+        <footer class="text-center py-4 md:py-8 text-[9px] text-slate-400 font-bold uppercase tracking-[0.1em] md:tracking-[0.2em]">
             &copy; 2024 Interne Schichtplanung
         </footer>
     </div>
@@ -157,11 +176,11 @@
             const monthBtn = document.getElementById('view-month');
             
             if (type === 'week') {
-                weekBtn.className = "flex-1 py-2 text-sm font-bold rounded-lg transition-all btn-action shadow-sm";
-                monthBtn.className = "flex-1 py-2 text-sm font-bold rounded-lg transition-all text-slate-500 hover:text-slate-700";
+                weekBtn.className = "flex-1 py-1.5 md:py-2 text-xs md:text-sm font-bold rounded-md md:rounded-lg transition-all btn-action shadow-sm";
+                monthBtn.className = "flex-1 py-1.5 md:py-2 text-xs md:text-sm font-bold rounded-md md:rounded-lg transition-all text-slate-500 hover:text-slate-700";
             } else {
-                monthBtn.className = "flex-1 py-2 text-sm font-bold rounded-lg transition-all btn-action shadow-sm";
-                weekBtn.className = "flex-1 py-2 text-sm font-bold rounded-lg transition-all text-slate-500 hover:text-slate-700";
+                monthBtn.className = "flex-1 py-1.5 md:py-2 text-xs md:text-sm font-bold rounded-md md:rounded-lg transition-all btn-action shadow-sm";
+                weekBtn.className = "flex-1 py-1.5 md:py-2 text-xs md:text-sm font-bold rounded-md md:rounded-lg transition-all text-slate-500 hover:text-slate-700";
             }
             render();
         }
@@ -212,7 +231,7 @@
 
             label.innerText = `${startOfWeek.toLocaleDateString('de-DE', { day: '2-digit', month: 'short' })} - ${endOfWeek.toLocaleDateString('de-DE', { day: '2-digit', month: 'short', year: 'numeric' })}`;
 
-            let html = `<div class="flex flex-col md:flex-row w-full min-h-[400px]">`;
+            let html = `<div class="flex flex-col md:flex-row w-full">`;
             for (let i = 0; i < 7; i++) {
                 const date = new Date(startOfWeek);
                 date.setDate(startOfWeek.getDate() + i);
@@ -221,18 +240,18 @@
                 const shift = shiftTypes[code];
 
                 html += `
-                    <div class="flex-1 border-r border-slate-100 flex flex-col last:border-0 ${isToday ? 'bg-indigo-50/20' : ''}">
-                        <div class="p-4 text-center border-b border-slate-50 ${isToday ? 'bg-button-custom text-white font-bold' : 'bg-slate-50 text-slate-500'}">
-                            <div class="text-[10px] uppercase tracking-widest font-bold">${date.toLocaleDateString('de-DE', { weekday: 'short' })}</div>
-                            <div class="text-2xl font-black">${date.getDate()}</div>
+                    <div class="flex-1 border-b md:border-b-0 md:border-r border-slate-100 flex md:flex-col last:border-0 ${isToday ? 'bg-indigo-50/20' : ''}">
+                        <div class="p-3 md:p-4 text-center border-r md:border-r-0 md:border-b border-slate-50 min-w-[70px] md:min-w-0 ${isToday ? 'bg-button-custom text-white font-bold' : 'bg-slate-50 text-slate-500'}">
+                            <div class="text-[9px] md:text-[10px] uppercase tracking-widest font-bold">${date.toLocaleDateString('de-DE', { weekday: 'short' })}</div>
+                            <div class="text-lg md:text-2xl font-black">${date.getDate()}</div>
                         </div>
-                        <div class="flex-1 p-6 flex flex-col items-center justify-center gap-4">
-                            <div class="w-20 h-20 rounded-2xl border-2 flex items-center justify-center text-3xl font-black ${shift.color} shadow-sm">
+                        <div class="flex-1 p-3 md:p-6 flex flex-row md:flex-col items-center justify-between md:justify-center gap-2 md:gap-4">
+                            <div class="w-10 h-10 md:w-20 md:h-20 rounded-lg md:rounded-2xl border flex items-center justify-center text-lg md:text-3xl font-black ${shift.color} shadow-sm">
                                 ${code}
                             </div>
-                            <div class="text-center">
-                                <div class="text-xs font-black uppercase tracking-tight" style="color: var(--primary-text)">${shift.name}</div>
-                                <div class="text-[10px] text-slate-400 font-mono mt-1">${shift.time}</div>
+                            <div class="text-right md:text-center flex-1 md:flex-none">
+                                <div class="text-[10px] md:text-xs font-black uppercase tracking-tight" style="color: var(--primary-text)">${shift.name}</div>
+                                <div class="text-[9px] md:text-[10px] text-slate-400 font-mono mt-0.5">${shift.time}</div>
                             </div>
                         </div>
                     </div>
@@ -254,7 +273,7 @@
             let html = `
                 <div class="calendar-grid">
                     ${['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map(d => `
-                        <div class="bg-slate-50 p-3 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-200">${d}</div>
+                        <div class="bg-slate-50 p-1 md:p-3 text-center text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-200">${d}</div>
                     `).join('')}
             `;
 
@@ -270,10 +289,10 @@
 
                 html += `
                     <div class="calendar-day ${isToday ? 'is-today' : ''}">
-                        <div class="text-right text-xs font-black ${isToday ? 'text-button-custom' : 'text-slate-300'}" ${isToday ? 'style="color: var(--button-red)"' : ''}>${d}</div>
-                        <div class="mt-2">
+                        <div class="text-right text-[10px] md:text-xs font-black ${isToday ? 'text-button-custom' : 'text-slate-300'}" ${isToday ? 'style="color: var(--button-red)"' : ''}>${d}</div>
+                        <div class="flex flex-col items-center">
                             <span class="shift-tag ${shift.color}">${code}</span>
-                            <div class="text-[9px] font-bold text-slate-500 mt-1 truncate">${shift.name !== 'Frei' ? shift.time.split(' ')[0] : ''}</div>
+                            <div class="hidden md:block text-[9px] font-bold text-slate-500 mt-1 truncate">${shift.name !== 'Frei' ? shift.time.split(' ')[0] : ''}</div>
                         </div>
                     </div>
                 `;
